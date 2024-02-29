@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+         #
+#    By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/05 15:51:03 by phudyka           #+#    #+#              #
-#    Updated: 2024/02/29 11:10:41 by dtassel          ###   ########.fr        #
+#    Updated: 2024/02/29 11:20:15 by phudyka          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CXX = c++
 
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS = src/main.cpp src/webserv.cpp src/client.cpp\
+SRCS = src/main.cpp src/webserv.cpp src/client.cpp src/utils.cpp\
 
 OBJS = $(SRCS:.cpp=.o)
 

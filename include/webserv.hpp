@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/02/29 10:59:58 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/02/29 11:39:47 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <sys/socket.h>
 
 #define GREEN   "\x1b[32m"
+#define BLUE	"\x1b[34m"
 #define RESET   "\x1b[0m"
 
 
@@ -56,6 +57,7 @@ private:
 	void	handleNewConnection();
     void	closeClientData(int clientSocket);
     void	removeClient(int index);
+	void	logConnection(const std::string& msg, const std::string id);
 };
 
 

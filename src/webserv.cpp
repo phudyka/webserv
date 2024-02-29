@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/02/29 10:59:51 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/02/29 11:39:57 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,17 @@ void webServ::start()
         throw std::runtime_error("Error: Fail to listen to connections");
 
     _isRunning = true;
-    struct pollfd	newPollfd;
-    newPollfd.fd = _socketServer;
-    newPollfd.events = POLLIN;
-    _pollfds.push_back(newPollfd);
 }
 
 void webServ::handleConnection()
 {
+    struct pollfd	newPollfd;
+
     while (_isRunning)
     {
+    	newPollfd.fd = _socketServer;
+    	newPollfd.events = POLLIN;
+    	_pollfds.push_back(newPollfd);
         std::cout << "Waiting for connection..." << std::endl;
         int clientSocket;
         struct sockaddr_in clientAddr;
@@ -60,7 +61,8 @@ void webServ::handleConnection()
             throw std::runtime_error("Error: Failed to accept the connection");
             continue;
         }
-        std::cout << "Connection from client: " << GREEN << inet_ntoa(clientAddr.sin_addr) << RESET << std::endl;
+		std::string logClient = "Connection from client: ";
+        logConnection(logClient, inet_ntoa(clientAddr.sin_addr));
         send(clientSocket, "Enter username: ", 17, 0);
         char buff[2048];
         int len = recv(clientSocket, buff, sizeof(buff), 0);
