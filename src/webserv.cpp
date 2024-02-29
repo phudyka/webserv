@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/02/28 11:43:30 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/02/29 10:59:51 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,58 +19,76 @@ webServ::webServ(int port)
     this->_isRunning = false;
 }
 
-webServ::~webServ()
-{
+webServ::~webServ() {}
 
-}
-
-void    webServ::start()
+void webServ::start()
 {
-    // Initialisation du Serveur et lancement de l'ecoute
-    this->_socketServer = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->_socketServer == -1)
-        throw std::runtime_error("Error : Fail to create a socket server");
-    std::cout << "Creation du socket : " << GREEN << "OK" << RESET << std::endl;
-    this->_serverAddr.sin_family = AF_INET;
-    this->_serverAddr.sin_addr.s_addr = INADDR_ANY;
-    this->_serverAddr.sin_port = htons(this->_port);
-    socklen_t sockLen = sizeof(this->_serverAddr);
-    int bindReturn = bind(this->_socketServer, (struct sockaddr *)&_serverAddr, sockLen);
+    _socketServer = socket(AF_INET, SOCK_STREAM, 0);
+    if (_socketServer == -1)
+        throw std::runtime_error("Error: Fail to create a socket server");
+
+    _serverAddr.sin_family = AF_INET;
+    _serverAddr.sin_addr.s_addr = INADDR_ANY;
+    _serverAddr.sin_port = htons(_port);
+    socklen_t sockLen = sizeof(_serverAddr);
+    int bindReturn = bind(_socketServer, (struct sockaddr *)&_serverAddr, sockLen);
     if (bindReturn == -1)
-        throw std::runtime_error("Error : Fail to link the socket server");
-    int listenReturn = listen(this->_socketServer, 5);
+        throw std::runtime_error("Error: Fail to bind the socket server");
+
+    int listenReturn = listen(_socketServer, 5);
     if (listenReturn == -1)
-        throw std::runtime_error("Error : Fail to listen connection");
-    this->_isRunning = true;
-    std::cout << "Ecoute sur le port : " << GREEN << this->_port << RESET << std::endl;
+        throw std::runtime_error("Error: Fail to listen to connections");
+
+    _isRunning = true;
+    struct pollfd	newPollfd;
+    newPollfd.fd = _socketServer;
+    newPollfd.events = POLLIN;
+    _pollfds.push_back(newPollfd);
 }
 
-void    webServ::handleConnection()
+void webServ::handleConnection()
 {
-    // Boucle d'attente de connexion, puis instruction.
-    // Voir pour utiliser poll() ici avec un objet client pour chaque client.
-    while (this->_isRunning)
+    while (_isRunning)
     {
-        std::cout << "En attente de connexion .." << std::endl;
+        std::cout << "Waiting for connection..." << std::endl;
         int clientSocket;
         struct sockaddr_in clientAddr;
         socklen_t clientAddrLen = sizeof(clientAddr);
-        clientSocket = accept(this->_socketServer, (struct sockaddr *)&clientAddr, &clientAddrLen);
+        clientSocket = accept(_socketServer, (struct sockaddr *)&clientAddr, &clientAddrLen);
         if (clientSocket == -1)
         {
-            throw std::runtime_error("Error : Failed to accept the connection");
+            throw std::runtime_error("Error: Failed to accept the connection");
             continue;
         }
-        std::cout << "Connexion du client : " << GREEN << inet_ntoa(clientAddr.sin_addr) << RESET << std::endl;
-        send(clientSocket, "Rentre ton pseudo : ", 21, 0);
+        std::cout << "Connection from client: " << GREEN << inet_ntoa(clientAddr.sin_addr) << RESET << std::endl;
+        send(clientSocket, "Enter username: ", 17, 0);
         char buff[2048];
         int len = recv(clientSocket, buff, sizeof(buff), 0);
         buff[len] = '\0';
-        std::string message = "Bienvenue sur webserv ";
+        std::string message = "Welcome to webserv ";
         message = message + buff;
         send(clientSocket, message.c_str(), message.size(), 0);
 
         close(clientSocket);
     }
-        close(_socketServer);
+    close(_socketServer);
+}
+
+void webServ::closeClientData(int clientSocket)
+{
+    close(clientSocket);
+    for (size_t i = 0; i < _pollfds.size(); ++i)
+    {
+        if (_pollfds[i].fd == clientSocket)
+        {
+            removeClient(i);
+            break;
+        }
+    }
+}
+
+void webServ::removeClient(int index)
+{
+    _pollfds.erase(_pollfds.begin() + index);
+    std::cout << "Connection closed." << std::endl;
 }
