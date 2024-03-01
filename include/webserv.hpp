@@ -3,21 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:41:55 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 16:50:00 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
+// GLOBAL BINDS
 # define FD_MAX		1024
 # define PORT		30000
 # define MAX_EVENT	10
 
-#include <iostream>
+// ERROR CODE
+# define E200		200
+# define E400		400
+# define E404		404
+
 #include <string>
 #include <poll.h>
 #include <vector>
@@ -25,8 +30,10 @@
 #include <netdb.h>
 #include <cstring>
 #include <fstream>
+#include <csignal>
 #include <sstream>
 #include <cstdlib>
+#include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -40,6 +47,7 @@
 #define YELLOW	"\x1b[33m"
 #define BLUE	"\x1b[34m"
 #define PURPLE	"\x1b[35m"
+#define CYAN	"\x1b[36m"
 #define RESET   "\x1b[0m"
 
 class	Client;
@@ -50,6 +58,7 @@ public:
     webServ(int port);
     ~webServ();
     void    start(void);
+	void	shutDown(void);
     void    firstConnection(void);
 
 private:
@@ -66,13 +75,14 @@ private:
 	};
 
 	std::vector<struct pollfd>	_pollfds;
-	std::vector<Client> _clients;
+	std::vector<Client> *_clients;
 
 	void	newConnection(void);
     void	closeClientData(int clientSocket);
     void	removeClient(size_t index);
 	void	clientData(size_t index);
 	void	logConnection(const std::string& msg, const std::string id);
+	void	broadcastShutdown(void);
 };
 
 #endif
