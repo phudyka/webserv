@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/02/29 11:39:57 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/01 09:36:39 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@ webServ::webServ(int port)
     this->_isRunning = false;
 }
 
-webServ::~webServ() {}
+webServ::~webServ()
+{
+	close(_socketServer);
+}
 
 void webServ::start()
 {
@@ -42,7 +45,7 @@ void webServ::start()
     _isRunning = true;
 }
 
-void webServ::handleConnection()
+void webServ::handleConnection(void)
 {
     struct pollfd	newPollfd;
 
@@ -59,7 +62,7 @@ void webServ::handleConnection()
         if (clientSocket == -1)
         {
             throw std::runtime_error("Error: Failed to accept the connection");
-            continue;
+            continue ;
         }
 		std::string logClient = "Connection from client: ";
         logConnection(logClient, inet_ntoa(clientAddr.sin_addr));
@@ -70,10 +73,7 @@ void webServ::handleConnection()
         std::string message = "Welcome to webserv ";
         message = message + buff;
         send(clientSocket, message.c_str(), message.size(), 0);
-
-        close(clientSocket);
     }
-    close(_socketServer);
 }
 
 void webServ::closeClientData(int clientSocket)
@@ -84,7 +84,7 @@ void webServ::closeClientData(int clientSocket)
         if (_pollfds[i].fd == clientSocket)
         {
             removeClient(i);
-            break;
+            break ;
         }
     }
 }
