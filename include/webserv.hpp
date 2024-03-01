@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:41:55 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 16:18:44 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 # define PORT		30000
 # define MAX_EVENT	10
 
-#include <iostream>
 #include <string>
 #include <poll.h>
 #include <vector>
@@ -25,8 +24,10 @@
 #include <netdb.h>
 #include <cstring>
 #include <fstream>
+#include <csignal>
 #include <sstream>
 #include <cstdlib>
+#include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -50,6 +51,7 @@ public:
     webServ(int port);
     ~webServ();
     void    start(void);
+	void	shutDown(void);
     void    firstConnection(void);
 
 private:
@@ -66,13 +68,14 @@ private:
 	};
 
 	std::vector<struct pollfd>	_pollfds;
-	std::vector<Client> _clients;
+	std::vector<Client> *_clients;
 
 	void	newConnection(void);
     void	closeClientData(int clientSocket);
     void	removeClient(size_t index);
 	void	clientData(size_t index);
 	void	logConnection(const std::string& msg, const std::string id);
+	void	broadcastShutdown(void);
 };
 
 #endif

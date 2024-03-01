@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:53:37 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 16:10:47 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,10 @@ webServ::webServ(int port)
     this->_port = port;
     this->_rootDirectory = ".";
     this->_isRunning = false;
+	this->_clients = new std::vector<Client>();
 }
 
-webServ::~webServ()
-{
-	close(_socketServer);
-	std::cout << YELLOW << "[Server socket has been succesfully closed]" << RESET << std::endl;
-}
+webServ::~webServ() {}
 
 void webServ::start()
 {
@@ -87,9 +84,9 @@ void webServ::firstConnection(void)
 
 void webServ::newConnection(void)
 {
-    struct sockaddr_in clientAddr;
-    socklen_t clientLen = sizeof(clientAddr);
-    int clientSocket = accept(_socketServer, (struct sockaddr*)&clientAddr, &clientLen);
+    struct sockaddr_in 	clientAddr;
+    socklen_t			clientLen = sizeof(clientAddr);
+    int					clientSocket = accept(_socketServer, (struct sockaddr*)&clientAddr, &clientLen);
 
     if (clientSocket == -1)
     {
@@ -104,11 +101,8 @@ void webServ::newConnection(void)
 
     _pollfds.push_back(newPollfd);
 
-	// Client newClient(clientSocket, inet_ntoa(clientAddr.sin_addr));
-    // _clients.push_back(newClient);
-	
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
-	send(clientSocket, "Enter username: ", 17, 0);
+	send(clientSocket, "You can now chat: ", 18, 0);
 }
 
 
@@ -135,7 +129,5 @@ void webServ::removeClient(size_t index)
     close(_pollfds[index].fd);
     _pollfds.erase(_pollfds.begin() + index);
 
-    if (index < _clients.size())
-        _clients.erase(_clients.begin() + index);
     std::cout << GREEN << "Connection closed." << RESET << std::endl;
 }
