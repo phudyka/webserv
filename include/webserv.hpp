@@ -6,16 +6,22 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 16:23:30 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/01 16:50:00 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
+// GLOBAL BINDS
 # define FD_MAX		1024
 # define PORT		30000
 # define MAX_EVENT	10
+
+// ERROR CODE
+# define E200		200
+# define E400		400
+# define E404		404
 
 #include <string>
 #include <poll.h>

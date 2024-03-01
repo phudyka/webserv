@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:51:42 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 16:50:07 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,10 @@ Request& Request::operator=(const Request& src)
         this->_clientIP = src._clientIP;
         this->_requestClient = src._requestClient;
     }
-    return *this;
+    return (*this);
 }
 
-Request::~Request()
-{
-    
-}
+Request::~Request() {}
 
 void	Request::removeSpace(std::string &src)
 {
@@ -46,32 +43,33 @@ void	Request::removeSpace(std::string &src)
     src.erase(src.find_last_not_of(" \t\r\n") + 1);
 }
 
-int		Request::extractLength(std::string src)
+int	Request::extractLength(std::string src)
 {
     int i = 0;
+
     removeSpace(src);
     while (src[i])
     {
         if (src[i] >= '0' && src[i] <= '9')
             i++;
         else
-            return -1;
+            return (-1);
     }
     if (i > 0)
     {
         int nb = atoi(src.c_str());
         return nb;
     }
-    return -1;
+    return (-1);
 }
 
-int		Request::analyzeGET()
+int	Request::analyzeGET()
 {
     std::ifstream iss(this->_requestClient.c_str());
 
-    std::string line;
+    int	countLine = 1; 
+    std::string	line;
     std::getline(iss, line);
-    int countLine = 1; 
     while(std::getline(iss, line))
     {
         countLine++;
@@ -97,13 +95,13 @@ int		Request::analyzeGET()
     return -1;
 }
 
-int Request::analyzePOST()
+int	Request::analyzePOST()
 {
     std::ifstream iss(this->_requestClient.c_str());
 
+    int	countLine = 1;
     std::string line;
     std::getline(iss, line);
-    int countLine = 1;
     while (std::getline(iss, line))
     {
         countLine++;
@@ -123,18 +121,18 @@ int Request::analyzePOST()
             {
                 this->_contentLength = extractLength(line.substr(lengthStart));
                 if (this->_contentLength == -1)
-                    return -1;
+                    return (-1);
             }
             else
-                return -1;
+                return (-1);
         }
         else if (countLine == 6)
-            return 2;
+            return (2);
     }
-    return -1;
+    return (-1);
 }
 
-int    Request::analyzeRequest()
+int	Request::analyzeRequest()
 {
     int ret = -1;
     std::ifstream   iss(this->_requestClient.c_str());
@@ -142,14 +140,10 @@ int    Request::analyzeRequest()
     std::string line;
     std::getline(iss, line);
     if (line.find("GET") != std::string::npos && line.find("HTTP/1.1"))
-    {
         ret = analyzeGET();
-    }
     else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1"))
-    {
         ret = analyzePOST();
-    }
-    return ret;
+    return (ret);
 }
 
 int	Request::responseGet()
@@ -171,7 +165,7 @@ int	Request::responseGet()
     response << htmlContent;
 
     this->_responseClient = response.str();
-    return 200;
+    return (E200);
 }
 
 void	Request::sendResponseToClient()
@@ -179,7 +173,8 @@ void	Request::sendResponseToClient()
     send(_socketClient, _responseClient.c_str(), _responseClient.size(), 0);
 }
 
-void Request::handleRequest() {
+void Request::handleRequest()
+{
     int retCode = 0;
 
     retCode = analyzeRequest();
@@ -189,21 +184,19 @@ void Request::handleRequest() {
             retCode = responseGet();
             break;
         case 2:
-
             break;
         default:
-            retCode = 400;
+            retCode = E400;
             break;
     }
-
     switch (retCode)
     {
-        case 200:
+        case E200:
             sendResponseToClient();
             break;
-        case 404:
+        case E404:
             break;
-        case 400:
+        case E400:
             break;
         default:
             break;

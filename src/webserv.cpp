@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 16:25:45 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/01 16:52:45 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,11 @@ void webServ::firstConnection(void)
                 clientData(i);
             // if (_pollfds[i].revents & POLLOUT)
         }
+		if (!_isRunning)
+        {
+            for (size_t i = 1; i < _pollfds.size(); ++i)
+                send(_pollfds[i].fd, RED "[Server is shutting down]" RESET, 27, 0);
+        }
     }
 
 }
@@ -102,7 +107,10 @@ void webServ::newConnection(void)
     _pollfds.push_back(newPollfd);
 
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
-	send(clientSocket, "You can now chat: ", 18, 0);
+    send(clientSocket, "You can now chat: ", 18, 0);
+
+	// Request requestHandler(clientSocket, inet_ntoa(clientAddr.sin_addr), );
+    // requestHandler.handleRequest();
 }
 
 
