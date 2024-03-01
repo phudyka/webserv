@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:51:42 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 15:48:39 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ Request::Request(int socket, const std::string &clientIP, const std::string &req
     this->_socketClient = socket;
     this->_clientIP = clientIP;
     this->_requestClient = request;
+    std::cout << "Socket client : " << socket << "Adress ip : " << clientIP << std::endl;
+    std::cout << request << std::endl;
 }
 
 Request::Request(const Request& src)
@@ -76,17 +78,7 @@ int		Request::analyzeGET()
     {
         countLine++;
         if (countLine == 2 && line.find("Host:") != std::string::npos)
-        {
-            size_t afterHost = line.find("Host:") + 6;
-            size_t urlStart = line.find(" \t", afterHost);
-            if (line.size() != urlStart)
-            {
-                this->_url = line.substr(urlStart);
-                removeSpace(this->_url);
-            }
-            else
-                return -1;
-        }
+            continue;
         else if (countLine == 3 && line.find("User-Agent:") != std::string::npos)
         {
             return 1;
@@ -134,18 +126,25 @@ int Request::analyzePOST()
     return -1;
 }
 
-int    Request::analyzeRequest()
+int Request::analyzeRequest()
 {
     int ret = -1;
-    std::ifstream   iss(this->_requestClient.c_str());
+    std::ifstream iss(this->_requestClient.c_str());
 
     std::string line;
     std::getline(iss, line);
-    if (line.find("GET") != std::string::npos && line.find("HTTP/1.1"))
+    if (line.find("GET") != std::string::npos && line.find("HTTP/1.1") != std::string::npos)
     {
+        size_t afterHost = line.find("/") + 1;
+        size_t urlStart = line.find(" ", afterHost);
+        if (urlStart != std::string::npos)
+        {
+            this->_url = line.substr(afterHost, urlStart - afterHost);
+            removeSpace(this->_url);
+        }
         ret = analyzeGET();
     }
-    else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1"))
+    else if (line.find("POST") != std::string::npos && line.find("HTTP/1.1") != std::string::npos)
     {
         ret = analyzePOST();
     }
@@ -183,6 +182,7 @@ void Request::handleRequest() {
     int retCode = 0;
 
     retCode = analyzeRequest();
+    std::cout << GREEN "URL capture : " << this->_url << RESET << std::endl;
     switch (retCode)
     {
         case 1:

@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:53:37 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 15:40:33 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,9 @@ void webServ::firstConnection(void)
         for (size_t i = 1; i < _pollfds.size(); ++i)
         {
             if (_pollfds[i].revents & (POLLIN | POLLHUP))
+            {
                 clientData(i);
+            }
             // if (_pollfds[i].revents & POLLOUT)
         }
     }
@@ -104,11 +106,12 @@ void webServ::newConnection(void)
 
     _pollfds.push_back(newPollfd);
 
-	// Client newClient(clientSocket, inet_ntoa(clientAddr.sin_addr));
-    // _clients.push_back(newClient);
+	//Client newClient(clientSocket, inet_ntoa(clientAddr.sin_addr));
+    //_clients.push_back(newClient);
 	
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
-	send(clientSocket, "Enter username: ", 17, 0);
+	//send(clientSocket, "Enter username: ", 17, 0);
+
 }
 
 
@@ -122,11 +125,14 @@ void webServ::clientData(size_t index)
     else
 	{
         buff[len] = '\0';
-        std::string message = PURPLE;
+        int clientSocket = _pollfds[index].fd;
+        Request request(clientSocket, "127.0.0.1", std::string(buff));
+        request.handleRequest();
+        /*std::string message = PURPLE;
         message += "Received data: ";
         message += buff;
         message += RESET;
-        std::cout << message << std::endl;
+        std::cout << message << std::endl;*/
     }
 }
 
