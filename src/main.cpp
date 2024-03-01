@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 06:53:43 by phudyka           #+#    #+#             */
-/*   Updated: 2024/02/29 11:38:03 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/01 10:04:53 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int	main(void)
 {
 	try
 	{
-		webServ server(30000);
+		webServ server(PORT);
 		server.start();
-		server.handleConnection();
+		server.firstConnection();
 	}
 	catch(const std::exception& e)
 	{
