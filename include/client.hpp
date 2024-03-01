@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 09:05:47 by dtassel           #+#    #+#             */
-/*   Updated: 2024/02/29 11:10:11 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 11:19:24 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ private:
     int         _socket;
     std::string _adressIp;
     bool        _isConnected;
+
 };
 
 #endif

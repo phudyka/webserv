@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 11:13:08 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/01 14:11:44 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,17 @@
 # define PORT		30000
 # define MAX_EVENT	10
 
+#include <iostream>
 #include <string>
 #include <poll.h>
 #include <vector>
+#include <fcntl.h>
 #include <netdb.h>
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 #include <unistd.h>
-#include <iostream>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -34,19 +36,20 @@
 
 #define RED		"\x1b[31m"
 #define GREEN   "\x1b[32m"
+#define YELLOW	"\x1b[33m"
 #define BLUE	"\x1b[34m"
 #define PURPLE	"\x1b[35m"
 #define RESET   "\x1b[0m"
 
-
+class	Client;
 class	webServ
 {
 
 public:
     webServ(int port);
     ~webServ();
-    void    start();
-    void    firstConnection();
+    void    start(void);
+    void    firstConnection(void);
 
 private:
     int         _socketServer;
@@ -61,12 +64,12 @@ private:
 		short	revents;
 	};
 
-	// std::vector<Client>			_clients;
 	std::vector<struct pollfd>	_pollfds;
+	std::vector<Client> _clients;
 
-	void	newConnection();
+	void	newConnection(void);
     void	closeClientData(int clientSocket);
-    void	removeClient(int index);
+    void	removeClient(size_t index);
 	void	clientData(size_t index);
 	void	logConnection(const std::string& msg, const std::string id);
 };

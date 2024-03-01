@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 09:10:57 by dtassel           #+#    #+#             */
-/*   Updated: 2024/02/29 11:10:29 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/01 14:06:22 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ Client& Client::operator=(const Client& src)
 Client::~Client()
 {
 	close(this->_socket);
-	std::cout << "Client : " << _adressIp << " disconnected" << std::endl;
+	std::cout << "Client : " << GREEN << _adressIp << RESET << " disconnected" << std::endl;
 }
 
 int Client::getSocket()

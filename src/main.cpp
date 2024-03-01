@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 06:53:43 by phudyka           #+#    #+#             */
-/*   Updated: 2024/03/01 10:04:53 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/01 11:32:07 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	main(void)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
+		exit(EXIT_FAILURE);
 	}
 	return (0);
 }
