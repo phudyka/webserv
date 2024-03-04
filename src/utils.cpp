@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 11:19:16 by phudyka           #+#    #+#             */
-/*   Updated: 2024/03/04 11:23:12 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 16:04:17 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ void	webServ::logConnection(const std::string& msg, const std::string id)
 
 void	webServ::shutDown(void)
 {
-	std::cout << std::endl << CYAN << "[Clients datas has been succesfully erased]" << RESET << std::endl;
 	close(_socketServer);
 	std::cout << CYAN << "[Server socket has been succesfully closed]" << RESET << std::endl;
 	std::cout << YELLOW << "[Webserv has been shutdown succesfully]" << RESET << std::endl;
