@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 11:22:36 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 11:27:28 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,8 @@ void webServ::newConnection(void)
     newPollfd.revents = 0;
 
     _pollfds.push_back(newPollfd);
-    Client	newClient(clientSocket, inet_ntoa(clientAddr.sin_addr));
-	_clients.push_back(newClient);
+	Client* newClient = new Client(clientSocket, inet_ntoa(clientAddr.sin_addr));
+	_clients.push_back(*newClient);
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
 }
 
@@ -136,7 +136,10 @@ void webServ::clientData(size_t index)
 void webServ::removeClient(size_t index)
 {
     close(_pollfds[index].fd);
+    delete &_clients[index];
     _pollfds.erase(_pollfds.begin() + index);
+    _clients.erase(_clients.begin() + index);
 
     std::cout << GREEN << "Connection closed." << RESET << std::endl;
 }
+
