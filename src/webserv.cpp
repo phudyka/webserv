@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 09:28:38 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 10:50:35 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,9 @@ void webServ::newConnection(void)
     newPollfd.revents = 0;
 
     _pollfds.push_back(newPollfd);
+
+    Client newClient(clientSocket, inet_ntoa(clientAddr.sin_addr));
+    this->_clients->push_back(newClient);
 
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
 }

@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 09:36:30 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 09:53:50 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Request::Request(int socket, const std::string &clientIP, const std::string &req
     this->_socketClient = socket;
     this->_clientIP = clientIP;
     this->_requestClient = request;
-    std::cout << "Socket client : " << socket << "Adress ip : " << clientIP << std::endl;
+    std::cout << "Socket client : " << socket << " Adress ip : " << clientIP << std::endl;
 }
 
 Request::Request(const Request& src)
@@ -186,7 +186,7 @@ void Request::handleRequest()
 
     retCode = analyzeRequest();
     std::cout << GREEN "URL capture : " << this->_url << RESET << std::endl;
-    std::cout << GREEN "code retour " << retCode << RESET << std::endl;
+    std::cout << GREEN "Code retour : " << retCode << RESET << std::endl;
     switch (retCode)
     {
         case 1:
