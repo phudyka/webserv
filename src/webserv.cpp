@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 16:10:12 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 16:34:52 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ void webServ::firstConnection(void)
                 clientData(i);
         }
     }
-
 }
 
 void webServ::newConnection(void)
