@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
+/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 15:08:31 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 15:23:01 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,9 +136,8 @@ void webServ::clientData(size_t index)
 void webServ::removeClient(size_t index)
 {
     close(_pollfds[index].fd);
-    delete (_clients[index]);
+    delete _clients[index];
     _pollfds.erase(_pollfds.begin() + index);
-    _clients.erase(_clients.begin() + index);
 
     std::cout << GREEN << "Connection closed." << RESET << std::endl;
 }
