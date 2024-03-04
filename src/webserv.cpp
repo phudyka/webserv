@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 11:27:28 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 14:57:57 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,31 +24,34 @@ webServ::~webServ() {}
 
 void webServ::start()
 {
-	_socketServer = socket(AF_INET, SOCK_STREAM, 0);
-	if (_socketServer == -1)
-		throw std::runtime_error(RED "Error: [Fail to create a socket server]" RESET);
-		
-	fcntl(_socketServer, F_SETFL, O_NONBLOCK);
-	
-	_serverAddr.sin_family = AF_INET;
-	_serverAddr.sin_addr.s_addr = INADDR_ANY;
-	_serverAddr.sin_port = htons(_port);
+    _socketServer = socket(AF_INET, SOCK_STREAM, 0);
+    if (_socketServer == -1)
+        throw std::runtime_error(RED "Error: [Fail to create a socket server]" RESET);
+    int reuseAddr = 1;
+    if (setsockopt(_socketServer, SOL_SOCKET, SO_REUSEADDR, &reuseAddr, sizeof(reuseAddr)) == -1)
+        throw std::runtime_error(RED "Error: [Fail to set SO_REUSEADDR option]" RESET);
+    fcntl(_socketServer, F_SETFL, O_NONBLOCK);
 
-	socklen_t	sockLen = sizeof(_serverAddr);
+    _serverAddr.sin_family = AF_INET;
+    _serverAddr.sin_addr.s_addr = INADDR_ANY;
+    _serverAddr.sin_port = htons(_port);
 
-	int	bindReturn = bind(_socketServer, (struct sockaddr*)&_serverAddr, sockLen);
-	if (bindReturn == -1)
-		throw std::runtime_error(RED "Error: [Fail to bind the socket server]" RESET);
-	int	listenReturn = listen(_socketServer, 5);
-	if (listenReturn == -1)
-		throw std::runtime_error(RED "Error: [Fail to listen to connections]" RESET);
-		
-	_pollfds.push_back(pollfd());
-	_pollfds.back().fd = _socketServer;
-	_pollfds.back().events = POLLIN;
-	_pollfds.back().revents = 0;
+    socklen_t sockLen = sizeof(_serverAddr);
 
-	_isRunning = true;
+    int bindReturn = bind(_socketServer, (struct sockaddr*)&_serverAddr, sockLen);
+    if (bindReturn == -1)
+        throw std::runtime_error(RED "Error: [Fail to bind the socket server]" RESET);
+
+    int listenReturn = listen(_socketServer, 5);
+    if (listenReturn == -1)
+        throw std::runtime_error(RED "Error: [Fail to listen to connections]" RESET);
+
+    _pollfds.push_back(pollfd());
+    _pollfds.back().fd = _socketServer;
+    _pollfds.back().events = POLLIN;
+    _pollfds.back().revents = 0;
+
+    _isRunning = true;
 }
 
 void webServ::firstConnection(void)
