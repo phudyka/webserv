@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 16:56:33 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 09:28:38 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ void webServ::firstConnection(void)
             {
                 clientData(i);
             }
-            // if (_pollfds[i].revents & POLLOUT)
         }
 		if (!_isRunning)
         {
@@ -109,17 +108,13 @@ void webServ::newConnection(void)
     _pollfds.push_back(newPollfd);
 
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
-    send(clientSocket, "You can now chat: ", 18, 0);
-
-	// Request requestHandler(clientSocket, inet_ntoa(clientAddr.sin_addr), );
-    // requestHandler.handleRequest();
 }
 
 
 void webServ::clientData(size_t index)
 {
     char	buff[2048];
-    int		len = recv(_pollfds[index].fd, buff, sizeof(buff), 0);
+    int    len = recv(_pollfds[index].fd, buff, sizeof(buff) - 1, 0);
 
     if (len <= 0)
         removeClient(index);
@@ -129,11 +124,6 @@ void webServ::clientData(size_t index)
         int clientSocket = _pollfds[index].fd;
         Request request(clientSocket, "127.0.0.1", std::string(buff));
         request.handleRequest();
-        /*std::string message = PURPLE;
-        message += "Received data: ";
-        message += buff;
-        message += RESET;
-        std::cout << message << std::endl;*/
     }
 }
 

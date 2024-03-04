@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 16:57:09 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 09:28:11 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ Request::Request(int socket, const std::string &clientIP, const std::string &req
     this->_clientIP = clientIP;
     this->_requestClient = request;
     std::cout << "Socket client : " << socket << "Adress ip : " << clientIP << std::endl;
-    std::cout << request << std::endl;
 }
 
 Request::Request(const Request& src)
@@ -67,21 +66,27 @@ int	Request::extractLength(std::string src)
 
 int	Request::analyzeGET()
 {
-    std::ifstream iss(this->_requestClient.c_str());
+    std::istringstream iss(this->_requestClient);
 
-    int	countLine = 1; 
+    int	countLine = -1; 
     std::string	line;
-    std::getline(iss, line);
     while(std::getline(iss, line))
     {
         countLine++;
-        if (countLine == 2 && line.find("Host:") != std::string::npos)
+        std::cout << "Analyse GET line : " << line << std::endl;
+        if (countLine == 0 && line.find(" /") != std::string::npos)
+        {
+            size_t pos_first_space = line.find(' ', line.find('/'));
+            this->_url = line.substr(line.find('/') + 1, pos_first_space - line.find('/') - 1);
+            std::cout << "URL: " << this->_url << std::endl;
+        }
+        else if (countLine == 1 && line.find("Host:") != std::string::npos)
             continue;
-        else if (countLine == 3 && line.find("User-Agent:") != std::string::npos)
+        else if (countLine == 2 && line.find("User-Agent:") != std::string::npos)
         {
             return 1;
         }
-        else if (countLine == 4)
+        else if (countLine == 3)
             break;
     }
     return -1;
@@ -89,7 +94,7 @@ int	Request::analyzeGET()
 
 int	Request::analyzePOST()
 {
-    std::ifstream iss(this->_requestClient.c_str());
+    std::istringstream iss(this->_requestClient);
 
     int	countLine = 1;
     std::string line;
@@ -127,38 +132,46 @@ int	Request::analyzePOST()
 int	Request::analyzeRequest()
 {
     int ret = -1;
-    std::ifstream iss(this->_requestClient.c_str());
+    std::cout << "Debug analyze request : " << this->_requestClient << std::endl;
+    std::istringstream iss(this->_requestClient);
 
     std::string line;
     std::getline(iss, line);
-    if (line.find("GET") != std::string::npos && line.find("HTTP/1.1"))
+    if (line.find("GET") != std::string::npos
+        && line.find(" /") != std::string::npos && line.find("HTTP/1.1"))
+    {
         ret = analyzeGET();
+    }
     else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1"))
         ret = analyzePOST();
     return (ret);
 }
 
-int	Request::responseGet()
+int Request::responseGet()
 {
     std::ifstream file(this->_url.c_str());
     if (!file.is_open())
     {
-        std::cerr << "Impossible d'ouvrir le fichier html" << std::endl;
+        std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
         return -1;
     }
+    
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string htmlContent = buffer.str();
 
     std::stringstream response;
     response << "HTTP/1.1 200 OK\r\n";
-    response << "Content-type : text/html\r\n";
-    response << "Content-length" << htmlContent.size() << "\r\n";
+    response << "Content-type: text/html\r\n";
+    response << "Content-length: " << htmlContent.size() << "\r\n";
+    response << "\r\n";
     response << htmlContent;
 
     this->_responseClient = response.str();
-    return (E200);
+    std::cout << "Reponse GET : " << this->_responseClient << std::endl;
+    return E200;
 }
+
 
 void	Request::sendResponseToClient()
 {
@@ -171,6 +184,7 @@ void Request::handleRequest()
 
     retCode = analyzeRequest();
     std::cout << GREEN "URL capture : " << this->_url << RESET << std::endl;
+    std::cout << GREEN "code retour " << retCode << RESET << std::endl;
     switch (retCode)
     {
         case 1:
