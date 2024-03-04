@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 14:57:57 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 15:08:31 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,6 @@ void webServ::firstConnection(void)
                 clientData(i);
             }
         }
-		if (!_isRunning)
-        {
-            for (size_t i = 1; i < _pollfds.size(); ++i)
-                send(_pollfds[i].fd, RED "[Server is shutting down]" RESET, 27, 0);
-        }
     }
 
 }
@@ -107,39 +102,41 @@ void webServ::newConnection(void)
     newPollfd.events = POLLIN;
     newPollfd.revents = 0;
 
-    _pollfds.push_back(newPollfd);
-	Client* newClient = new Client(clientSocket, inet_ntoa(clientAddr.sin_addr));
-	_clients.push_back(*newClient);
+  _pollfds.push_back(newPollfd);
+    Client* newClient = new Client(clientSocket, inet_ntoa(clientAddr.sin_addr));
+    _clients.push_back(newClient);
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
 }
 
 
 void webServ::clientData(size_t index)
 {
-    char	buff[2048];
-    int    len = recv(_pollfds[index].fd, buff, sizeof(buff) - 1, 0);
+    char buff[2048];
+    int len = recv(_pollfds[index].fd, buff, sizeof(buff) - 1, 0);
 
     if (len <= 0)
         removeClient(index);
     else
-	{
+    {
         buff[len] = '\0';
         int clientSocket = _pollfds[index].fd;
+
         for (size_t i = 0; i < _clients.size(); i++)
         {
-            if (_clients[i].getSocket() == clientSocket)
+            if (_clients[i]->getSocket() == clientSocket)
             {
-                Request request(clientSocket, _clients[i].getAdIP(), std::string(buff));
+                Request request(clientSocket, _clients[i]->getAdIP(), std::string(buff));
                 request.handleRequest();
             }
         }
     }
 }
 
+
 void webServ::removeClient(size_t index)
 {
     close(_pollfds[index].fd);
-    delete &_clients[index];
+    delete (_clients[index]);
     _pollfds.erase(_pollfds.begin() + index);
     _clients.erase(_clients.begin() + index);
 
