@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
+/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 16:50:00 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 11:09:41 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ private:
 	std::vector<struct pollfd>	_pollfds;
 	std::vector<Client> *_clients;
 
-	void	newConnection(void);
+	void 	newConnection();
     void	closeClientData(int clientSocket);
     void	removeClient(size_t index);
 	void	clientData(size_t index);
