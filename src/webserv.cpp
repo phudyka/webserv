@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 11:12:58 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 11:22:36 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ webServ::webServ(int port)
     this->_port = port;
     this->_rootDirectory = ".";
     this->_isRunning = false;
-	this->_clients = new std::vector<Client>();
 }
 
 webServ::~webServ() {}
@@ -106,8 +105,8 @@ void webServ::newConnection(void)
     newPollfd.revents = 0;
 
     _pollfds.push_back(newPollfd);
-    //Client newClient = new(Client(clientSocket, inet_ntoa(clientAddr.sin_addr)));
-
+    Client	newClient(clientSocket, inet_ntoa(clientAddr.sin_addr));
+	_clients.push_back(newClient);
     logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
 }
 
@@ -123,11 +122,11 @@ void webServ::clientData(size_t index)
 	{
         buff[len] = '\0';
         int clientSocket = _pollfds[index].fd;
-        for (size_t i = 0; i < _clients->size(); i++)
+        for (size_t i = 0; i < _clients.size(); i++)
         {
-            if ((*_clients)[i].getSocket() == clientSocket)
+            if (_clients[i].getSocket() == clientSocket)
             {
-                Request request(clientSocket, (*_clients)[i].getAdIP(), std::string(buff));
+                Request request(clientSocket, _clients[i].getAdIP(), std::string(buff));
                 request.handleRequest();
             }
         }
