@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 15:23:01 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 15:59:40 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,10 @@ void webServ::firstConnection(void)
 
         for (size_t i = 1; i < _pollfds.size(); ++i)
         {
-            if (_pollfds[i].revents & (POLLIN | POLLHUP))
+            if (_pollfds[i].revents & POLLIN)
             {
                 clientData(i);
-            }
+            }  
         }
     }
 
@@ -112,7 +112,7 @@ void webServ::newConnection(void)
 void webServ::clientData(size_t index)
 {
     char buff[2048];
-    int len = recv(_pollfds[index].fd, buff, sizeof(buff) - 1, 0);
+    int len = recv(_pollfds[index].fd, buff, sizeof(buff), 0);
 
     if (len <= 0)
         removeClient(index);
@@ -136,8 +136,11 @@ void webServ::clientData(size_t index)
 void webServ::removeClient(size_t index)
 {
     close(_pollfds[index].fd);
-    delete _clients[index];
     _pollfds.erase(_pollfds.begin() + index);
+    index--;
+    std::cout << "Index : " << index << std::endl;
+    delete _clients[index];
+    _clients.erase(_clients.begin() + index);
 
     std::cout << GREEN << "Connection closed." << RESET << std::endl;
 }
