@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 09:28:11 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 09:36:30 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ int	Request::analyzeGET()
             size_t pos_first_space = line.find(' ', line.find('/'));
             this->_url = line.substr(line.find('/') + 1, pos_first_space - line.find('/') - 1);
             std::cout << "URL: " << this->_url << std::endl;
+            if (this->_url.empty())
+                this->_url = "html/Webserv.html";
         }
         else if (countLine == 1 && line.find("Host:") != std::string::npos)
             continue;
