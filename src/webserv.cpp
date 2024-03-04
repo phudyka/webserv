@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 16:07:42 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 16:09:04 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ void webServ::removeClient(size_t index)
     index--;
     delete (_clients[index]);
     _clients.erase(_clients.begin() + index);
-	std::cout << CYAN << "[Client[" << index << "] datas has been succesfully erased]" << RESET << std::endl;
+	std::cout << CYAN << "[Client [" << index << "] has been succesfully removed]" << RESET << std::endl;
     std::cout << GREEN << "Connection closed." << RESET << std::endl;
 }
 
