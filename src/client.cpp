@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 09:10:57 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 15:39:12 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 16:11:58 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Client& Client::operator=(const Client& src)
 		this->_adressIp = src._adressIp;
 		this->_isConnected = src._isConnected;
 	}
-	return *this;
+	return (*this);
 }
 
 Client::~Client()
@@ -43,17 +43,17 @@ Client::~Client()
 
 int Client::getSocket()
 {
-	return this->_socket;
+	return (this->_socket);
 }
 
 const std::string Client::getAdIP()
 {
-	return this->_adressIp;
+	return (this->_adressIp);
 }
 
 bool Client::getState()
 {
-	return this->_isConnected;
+	return (this->_isConnected);
 }
 
 void Client::disconnect()

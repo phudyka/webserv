@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 09:53:50 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/04 16:11:34 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	Request::extractLength(std::string src)
     if (i > 0)
     {
         int nb = atoi(src.c_str());
-        return nb;
+        return (nb);
     }
     return (-1);
 }
@@ -85,13 +85,11 @@ int	Request::analyzeGET()
         else if (countLine == 1 && line.find("Host:") != std::string::npos)
             continue;
         else if (countLine == 2 && line.find("User-Agent:") != std::string::npos)
-        {
-            return 1;
-        }
+            return (1);
         else if (countLine == 3)
             break;
     }
-    return -1;
+    return (-1);
 }
 
 int	Request::analyzePOST()
@@ -105,13 +103,11 @@ int	Request::analyzePOST()
     {
         countLine++;
         if (countLine == 2 && line.find("Host:") != std::string::npos)
-            continue;
+            continue ;
         else if (countLine == 3 && line.find("User-Agent:") != std::string::npos)
-        {
-            continue;
-        }
+            continue ;
         else if (countLine == 4 && line.find("Content-type:") != std::string::npos)
-            continue;
+            continue ;
         else if (countLine == 5 && line.find("Content-length:") != std::string::npos)
         {
             size_t  afterHost = line.find("Content-length:") + 16;
@@ -141,9 +137,7 @@ int	Request::analyzeRequest()
     std::getline(iss, line);
     if (line.find("GET") != std::string::npos
         && line.find(" /") != std::string::npos && line.find("HTTP/1.1"))
-    {
         ret = analyzeGET();
-    }
     else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1"))
         ret = analyzePOST();
     return (ret);
@@ -155,7 +149,7 @@ int Request::responseGet()
     if (!file.is_open())
     {
         std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
-        return -1;
+        return (-1);
     }
     
     std::stringstream buffer;
@@ -171,9 +165,8 @@ int Request::responseGet()
 
     this->_responseClient = response.str();
     std::cout << "Reponse GET : " << this->_responseClient << std::endl;
-    return E200;
+    return (E200);
 }
-
 
 void	Request::sendResponseToClient()
 {
@@ -191,23 +184,23 @@ void Request::handleRequest()
     {
         case 1:
             retCode = responseGet();
-            break;
+            break ;
         case 2:
-            break;
+            break ;
         default:
             retCode = E400;
-            break;
+            break ;
     }
     switch (retCode)
     {
         case E200:
             sendResponseToClient();
-            break;
+            break ;
         case E404:
-            break;
+            break ;
         case E400:
-            break;
+            break ;
         default:
-            break;
+            break ;
     }
 }

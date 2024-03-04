@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:59:08 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 16:09:04 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/04 16:10:12 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,16 +70,12 @@ void webServ::firstConnection(void)
             else
                 throw std::runtime_error(RED "Error: [poll() failed]" RESET);
         }
-
         if (_pollfds[0].revents & POLLIN)
             newConnection();
-
         for (size_t i = 1; i < _pollfds.size(); ++i)
         {
             if (_pollfds[i].revents & POLLIN)
-            {
                 clientData(i);
-            }  
         }
     }
 
@@ -101,13 +97,12 @@ void webServ::newConnection(void)
     newPollfd.fd = clientSocket;
     newPollfd.events = POLLIN;
     newPollfd.revents = 0;
-
-  _pollfds.push_back(newPollfd);
-    Client* newClient = new Client(clientSocket, inet_ntoa(clientAddr.sin_addr));
-    _clients.push_back(newClient);
-    logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
+	
+	_pollfds.push_back(newPollfd);
+	Client* newClient = new Client(clientSocket, inet_ntoa(clientAddr.sin_addr));
+	_clients.push_back(newClient);
+	logConnection("Connection from client: ", inet_ntoa(clientAddr.sin_addr));
 }
-
 
 void webServ::clientData(size_t index)
 {
@@ -131,7 +126,6 @@ void webServ::clientData(size_t index)
         }
     }
 }
-
 
 void webServ::removeClient(size_t index)
 {
