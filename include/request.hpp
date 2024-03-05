@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 09:57:20 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/01 14:32:28 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/05 09:42:24 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,16 @@
 #define REQUEST_HPP
 
 #include "webserv.hpp"
+
+// METHODES
+#define GET			1
+#define POST		2
+#define DELETE		3
+
+// ERROR CODE
+# define E200		200
+# define E400		400
+# define E404		404
 
 class Request
 {
@@ -23,7 +33,8 @@ public:
 	Request& operator=(const Request& src);
 	~Request();
 	void	handleRequest();
-	int		analyzeRequest();
+	int		parseRequest();
+	void	generateResponse();
 	int		analyzeGET();
 	int		analyzePOST();
 	void	removeSpace(std::string &src);

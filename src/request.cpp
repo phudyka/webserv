@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
+/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 16:11:34 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/05 09:43:06 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int	Request::analyzeGET()
             std::cout << "URL: " << this->_url << std::endl;
             if (this->_url.empty())
                 this->_url = "html/Webserv.html";
+            else
+                this->_url = "html/error_404.html";
         }
         else if (countLine == 1 && line.find("Host:") != std::string::npos)
             continue;
@@ -92,6 +94,36 @@ int	Request::analyzeGET()
     return (-1);
 }
 
+
+int Request::responseGet()
+{
+    std::ifstream file(this->_url.c_str());
+    if (!file.is_open())
+    {
+        std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
+        return (-1);
+    }
+    
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string htmlContent = buffer.str();
+
+    std::stringstream response;
+    response << "HTTP/1.1 200 OK\r\n";
+    response << "Content-type: text/html\r\n";
+    response << "Content-length: " << htmlContent.size() << "\r\n";
+    response << "\r\n";
+    response << htmlContent;
+
+    this->_responseClient = response.str();
+    std::cout << "Reponse GET : " << this->_responseClient << std::endl;
+    return (E200);
+}
+
+void	Request::sendResponseToClient()
+{
+    send(_socketClient, _responseClient.c_str(), _responseClient.size(), 0);
+}
 int	Request::analyzePOST()
 {
     std::istringstream iss(this->_requestClient);
@@ -127,7 +159,19 @@ int	Request::analyzePOST()
     return (-1);
 }
 
-int	Request::analyzeRequest()
+void	Request::generateResponse()
+{
+    if (_statusCode == GET)
+        responseGet();
+    else if (_statusCode == POST)
+        responsePost();
+    else if (_statusCode == DELETE)
+        responseDelete();
+    else
+        responseError();
+}
+
+int	Request::parseRequest()
 {
     int ret = -1;
     std::cout << "Debug analyze request : " << this->_requestClient << std::endl;
@@ -140,67 +184,14 @@ int	Request::analyzeRequest()
         ret = analyzeGET();
     else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1"))
         ret = analyzePOST();
+    /*else if(line.find("DELETE") != std::string::npos && line.find("HTTP/1.1"))
+        ret = analyzeDELETE();*/
     return (ret);
-}
-
-int Request::responseGet()
-{
-    std::ifstream file(this->_url.c_str());
-    if (!file.is_open())
-    {
-        std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
-        return (-1);
-    }
-    
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string htmlContent = buffer.str();
-
-    std::stringstream response;
-    response << "HTTP/1.1 200 OK\r\n";
-    response << "Content-type: text/html\r\n";
-    response << "Content-length: " << htmlContent.size() << "\r\n";
-    response << "\r\n";
-    response << htmlContent;
-
-    this->_responseClient = response.str();
-    std::cout << "Reponse GET : " << this->_responseClient << std::endl;
-    return (E200);
-}
-
-void	Request::sendResponseToClient()
-{
-    send(_socketClient, _responseClient.c_str(), _responseClient.size(), 0);
 }
 
 void Request::handleRequest()
 {
-    int retCode = 0;
-
-    retCode = analyzeRequest();
-    std::cout << GREEN "URL capture : " << this->_url << RESET << std::endl;
-    std::cout << GREEN "Code retour : " << retCode << RESET << std::endl;
-    switch (retCode)
-    {
-        case 1:
-            retCode = responseGet();
-            break ;
-        case 2:
-            break ;
-        default:
-            retCode = E400;
-            break ;
-    }
-    switch (retCode)
-    {
-        case E200:
-            sendResponseToClient();
-            break ;
-        case E404:
-            break ;
-        case E400:
-            break ;
-        default:
-            break ;
-    }
+    _statusCode = parseRequest();
+    generateResponse();
+    sendResponseToClient();
 }

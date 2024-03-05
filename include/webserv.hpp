@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
+/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/04 15:07:55 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/05 09:26:34 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,6 @@
 # define FD_MAX		1024
 # define PORT		30000
 # define MAX_EVENT	10
-
-// ERROR CODE
-# define E200		200
-# define E400		400
-# define E404		404
 
 #include <string>
 #include <poll.h>
