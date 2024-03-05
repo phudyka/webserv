@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/05 09:43:06 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/05 10:22:45 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,44 +64,36 @@ int	Request::extractLength(std::string src)
     return (-1);
 }
 
-int	Request::analyzeGET()
-{
+int Request::analyzeGET() {
     std::istringstream iss(this->_requestClient);
+    int countLine = 0; 
+    std::string line;
 
-    int	countLine = -1; 
-    std::string	line;
     while(std::getline(iss, line))
     {
-        countLine++;
-        std::cout << "Analyse GET line : " << line << std::endl;
-        if (countLine == 0 && line.find(" /") != std::string::npos)
-        {
-            size_t pos_first_space = line.find(' ', line.find('/'));
-            this->_url = line.substr(line.find('/') + 1, pos_first_space - line.find('/') - 1);
-            std::cout << "URL: " << this->_url << std::endl;
+        if (countLine == 0 && line.find("GET") != std::string::npos && line.find("HTTP/1.1") != std::string::npos) {
+            size_t urlStart = line.find('/') + 1;
+            size_t urlEnd = line.find(" HTTP/1.1");
+            this->_url = line.substr(urlStart, urlEnd - urlStart);
             if (this->_url.empty())
                 this->_url = "html/Webserv.html";
             else
                 this->_url = "html/error_404.html";
         }
-        else if (countLine == 1 && line.find("Host:") != std::string::npos)
-            continue;
-        else if (countLine == 2 && line.find("User-Agent:") != std::string::npos)
-            return (1);
-        else if (countLine == 3)
-            break;
+        countLine++;
     }
-    return (-1);
+    if (countLine == 0)
+        return E400;
+    return (E200);
 }
 
 
 int Request::responseGet()
 {
     std::ifstream file(this->_url.c_str());
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
-        return (-1);
+        return E404;
     }
     
     std::stringstream buffer;
@@ -116,47 +108,49 @@ int Request::responseGet()
     response << htmlContent;
 
     this->_responseClient = response.str();
-    std::cout << "Reponse GET : " << this->_responseClient << std::endl;
-    return (E200);
+
+    return E200;
 }
 
 void	Request::sendResponseToClient()
 {
     send(_socketClient, _responseClient.c_str(), _responseClient.size(), 0);
 }
-int	Request::analyzePOST()
+
+int Request::analyzePOST()
 {
     std::istringstream iss(this->_requestClient);
-
-    int	countLine = 1;
     std::string line;
-    std::getline(iss, line);
+    int contentLength = -1;
+
     while (std::getline(iss, line))
     {
-        countLine++;
-        if (countLine == 2 && line.find("Host:") != std::string::npos)
-            continue ;
-        else if (countLine == 3 && line.find("User-Agent:") != std::string::npos)
-            continue ;
-        else if (countLine == 4 && line.find("Content-type:") != std::string::npos)
-            continue ;
-        else if (countLine == 5 && line.find("Content-length:") != std::string::npos)
+        if (line.find("Content-Length:") != std::string::npos)
         {
-            size_t  afterHost = line.find("Content-length:") + 16;
-            size_t  lengthStart = line.find(" \t", afterHost);
-            if (line.size() != lengthStart)
+            size_t contentLengthPos = line.find(":") + 1;
+            std::string lengthStr = line.substr(contentLengthPos);
+            bool validLength = true;
+            for (size_t i = 0; i < lengthStr.size(); ++i)
             {
-                this->_contentLength = extractLength(line.substr(lengthStart));
-                if (this->_contentLength == -1)
-                    return (-1);
+                if (!isdigit(lengthStr[i]))
+                {
+                    validLength = false;
+                    break;
+                }
+            }
+            if (validLength)
+            {
+                contentLength = atoi(lengthStr.c_str());
+                break;
             }
             else
-                return (-1);
+                return -1;
         }
-        else if (countLine == 6)
-            return (2);
     }
-    return (-1);
+    if (contentLength != -1)
+        return 2;
+    else
+        return -1;
 }
 
 void	Request::generateResponse()
@@ -171,22 +165,18 @@ void	Request::generateResponse()
         responseError();
 }
 
-int	Request::parseRequest()
+int Request::parseRequest()
 {
-    int ret = -1;
-    std::cout << "Debug analyze request : " << this->_requestClient << std::endl;
     std::istringstream iss(this->_requestClient);
-
     std::string line;
     std::getline(iss, line);
-    if (line.find("GET") != std::string::npos
-        && line.find(" /") != std::string::npos && line.find("HTTP/1.1"))
-        ret = analyzeGET();
-    else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1"))
-        ret = analyzePOST();
-    /*else if(line.find("DELETE") != std::string::npos && line.find("HTTP/1.1"))
-        ret = analyzeDELETE();*/
-    return (ret);
+
+    if (line.find("GET") != std::string::npos && line.find(" /") != std::string::npos && line.find("HTTP/1.1") != std::string::npos)
+        return analyzeGET();
+    else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1") != std::string::npos)
+        return analyzePOST();
+    else
+        return E400;
 }
 
 void Request::handleRequest()
