@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/05 10:33:38 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/05 10:52:05 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int Request::analyzeGET() {
         countLine++;
     }
     if (countLine == 0)
-        return E400;
+        return (E400);
     return (E200);
 }
 
@@ -94,7 +94,7 @@ int Request::responseGET()
     if (!file.is_open()) 
     {
         std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
-        return E404;
+        return (E404);
     }
     
     std::stringstream buffer;
@@ -110,7 +110,7 @@ int Request::responseGET()
 
     this->_responseClient = response.str();
 
-    return E200;
+    return (E200);
 }
 
 void	Request::sendResponseToClient()
@@ -136,32 +136,32 @@ int	Request::analyzePOST()
                 if (!isdigit(lengthStr[i]))
                 {
                     validLength = false;
-                    break;
+                    break ;
                 }
             }
             if (validLength)
             {
                 contentLength = atoi(lengthStr.c_str());
-                break;
+                break ;
             }
             else
-                return -1;
+                return (-1);
         }
     }
     if (contentLength != -1)
-        return 2;
+        return (2);
     else
-        return -1;
+        return (-1);
 }
 
 void	Request::generateResponse()
 {
     if (_statusCode == GET)
         responseGET();
-    else if (_statusCode == POST)
-        responsePost();
-    else if (_statusCode == DELETE)
-        responseDelete();
+    // else if (_statusCode == POST)
+    //     responsePost();
+    // else if (_statusCode == DELETE)
+    //     responseDelete();
     else
         responseError();
 }
@@ -177,7 +177,7 @@ int Request::parseRequest()
     else if(line.find("POST") != std::string::npos && line.find("HTTP/1.1") != std::string::npos)
         return analyzePOST();
     else
-        return E400;
+        return (E400);
 }
 
 void Request::handleRequest()
