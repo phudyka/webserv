@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 10:01:53 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/05 10:22:45 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/05 10:33:38 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,11 @@ int Request::analyzeGET() {
 }
 
 
-int Request::responseGet()
+int Request::responseGET()
 {
     std::ifstream file(this->_url.c_str());
-    if (!file.is_open()) {
+    if (!file.is_open()) 
+    {
         std::cerr << "Impossible d'ouvrir le fichier HTML" << std::endl;
         return E404;
     }
@@ -117,7 +118,7 @@ void	Request::sendResponseToClient()
     send(_socketClient, _responseClient.c_str(), _responseClient.size(), 0);
 }
 
-int Request::analyzePOST()
+int	Request::analyzePOST()
 {
     std::istringstream iss(this->_requestClient);
     std::string line;
@@ -156,7 +157,7 @@ int Request::analyzePOST()
 void	Request::generateResponse()
 {
     if (_statusCode == GET)
-        responseGet();
+        responseGET();
     else if (_statusCode == POST)
         responsePost();
     else if (_statusCode == DELETE)

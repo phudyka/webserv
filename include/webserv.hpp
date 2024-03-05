@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
+/*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/05 09:26:34 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/05 10:15:50 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@
 #define BLUE	"\x1b[34m"
 #define PURPLE	"\x1b[35m"
 #define CYAN	"\x1b[36m"
+#define ORANGE  "\x1b[38;5;208m"
 #define RESET   "\x1b[0m"
 
 class	Client;

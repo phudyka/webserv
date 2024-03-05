@@ -6,7 +6,7 @@
 /*   By: dtassel <dtassel@42.nice.fr>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 09:57:20 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/05 09:42:24 by dtassel          ###   ########.fr       */
+/*   Updated: 2024/03/05 10:29:32 by dtassel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,17 @@
 #define DELETE		3
 
 // ERROR CODE
-# define E200		200
+# define E200		200 // Success
+# define E301		301
+# define E302		302
 # define E400		400
+# define E401		401
+# define E403		403
 # define E404		404
+# define E500		500
+# define E502		502
+# define E503		503
+# define E504		504
 
 class Request
 {
@@ -39,7 +47,8 @@ public:
 	int		analyzePOST();
 	void	removeSpace(std::string &src);
 	int		extractLength(std::string src);
-	int		responseGet();
+	int		responseGET();
+	int		responseError();
 	void	sendResponseToClient();
 private:
 	int _statusCode;
