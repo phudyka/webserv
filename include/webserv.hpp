@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 08:56:25 by dtassel           #+#    #+#             */
-/*   Updated: 2024/03/05 10:15:50 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/05 15:45:36 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,17 @@
 #define RESET   "\x1b[0m"
 
 class	Client;
+
+struct	ServerConfig
+{
+    int							port;
+    size_t						maxBodySize;
+    std::string					host;
+    std::vector<std::string>	serverNames;
+    std::string					defaultErrorPage;
+
+};
+
 class	webServ
 {
 
@@ -73,12 +84,14 @@ private:
 	std::vector<struct pollfd>	_pollfds;
 	std::vector<Client*> _clients;
 
-	void 	newConnection();
+	void 	newConnection(void);
     void	closeClientData(int clientSocket);
     void	removeClient(size_t index);
 	void	clientData(size_t index);
 	void	logConnection(const std::string& msg, const std::string id);
 	void	broadcastShutdown(void);
 };
+
+int	parseConfig(const std::string& configFile, ServerConfig& serverConfig);
 
 #endif

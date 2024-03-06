@@ -6,7 +6,7 @@
 /*   By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 06:53:43 by phudyka           #+#    #+#             */
-/*   Updated: 2024/03/01 16:16:18 by phudyka          ###   ########.fr       */
+/*   Updated: 2024/03/05 15:39:40 by phudyka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,34 @@ static void	signalHandler(int sig)
 	exit (sig);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
-    try
+    if (argc == 2)
 	{
-        globalInstance = new webServ(PORT);
-        signal(SIGINT, signalHandler);
+        ServerConfig	serverConfig;
+	
+        if (!parseConfig(argv[1], serverConfig))
+            return (EXIT_FAILURE);
+        try
+		{
+            globalInstance = new webServ(serverConfig.port);
+            signal(SIGINT, signalHandler);
 
-        globalInstance->start();
-        globalInstance->firstConnection();
+            globalInstance->start();
+            globalInstance->firstConnection();
+        }
+		catch (const std::exception& e)
+		{
+            std::cerr << e.what() << '\n';
+            exit(EXIT_FAILURE);
+        }
+        delete (globalInstance);
+        return (EXIT_SUCCESS);
     }
-	catch (const std::exception& e)
+	else
 	{
-        std::cerr << e.what() << '\n';
-        exit(EXIT_FAILURE);
+        std::cout << RED << "Error : [Bad arguments] './webserv + configFile'" << RESET << std::endl;
+        return (EXIT_FAILURE);
     }
-    delete (globalInstance);
-    return (EXIT_SUCCESS);
+    return (EXIT_FAILURE);
 }

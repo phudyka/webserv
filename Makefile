@@ -6,7 +6,7 @@
 #    By: phudyka <phudyka@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/05 15:51:03 by phudyka           #+#    #+#              #
-#    Updated: 2024/03/05 09:49:25 by phudyka          ###   ########.fr        #
+#    Updated: 2024/03/05 14:23:47 by phudyka          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CXX = c++
 
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS = src/main.cpp src/webserv.cpp src/client.cpp src/utils.cpp src/request.cpp src/response.cpp\
+SRCS = src/main.cpp src/webserv.cpp src/client.cpp src/utils.cpp src/request.cpp src/response.cpp src/config.cpp\
 
 OBJS = $(SRCS:.cpp=.o)
 
